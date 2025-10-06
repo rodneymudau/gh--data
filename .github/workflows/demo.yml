@@ -1,3 +1,45 @@
+# This GitHub Actions workflow automates the process of testing, building, and deploying a website.
+#
+# Workflow Name: Deploy website
+#
+# Triggers:
+#   - Runs on every push to the 'master' branch.
+#
+# Jobs:
+#   1. test:
+#      - Runs on Ubuntu latest.
+#      - Steps:
+#        - Checks out the repository code.
+#        - Caches npm dependencies to speed up builds.
+#        - Installs dependencies using 'npm ci'.
+#        - Lints the codebase.
+#        - Runs tests.
+#
+#   2. build:
+#      - Depends on the 'test' job.
+#      - Runs on Ubuntu latest.
+#      - Steps:
+#        - Checks out the repository code.
+#        - Caches npm dependencies.
+#        - Installs dependencies.
+#        - Builds the website using 'npm run build'.
+#        - Finds the built JS file(s) in 'dist/assets' and outputs the filename(s).
+#        - Uploads the 'dist' directory as an artifact for use in later jobs.
+#
+#   3. deploy:
+#      - Depends on the 'build' job.
+#      - Runs on Ubuntu latest.
+#      - Steps:
+#        - Downloads the build artifacts from the previous job.
+#        - Lists the contents of the current directory for debugging.
+#        - Outputs the name of the built JS file(s) from the build job.
+#        - Placeholder step for deployment (currently echoes "Deploying...").
+#
+# Notes:
+#   - Uses actions/checkout@v3 for code checkout.
+#   - Uses actions/cache@v3 to cache npm dependencies based on 'package-lock.json'.
+#   - Uses actions/upload-artifact@v3 and actions/download-artifact@v3 for artifact management.
+#   - The workflow is modular, ensuring that code is tested before building and deploying.
 name: Deploy website
 on:
   push:
@@ -41,7 +83,7 @@ jobs:
         id: publish
         run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist-files
           path: dist
